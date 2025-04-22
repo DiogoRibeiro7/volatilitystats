@@ -5,7 +5,7 @@ from scipy.optimize import minimize
 def component_garch_log_likelihood(params, returns):
     """
     Negative log-likelihood for component GARCH(1,1) model.
-    
+
     Parameters
     ----------
     params : list
@@ -18,10 +18,15 @@ def component_garch_log_likelihood(params, returns):
     float
         Negative log-likelihood value.
     """
-    omega, alpha, beta, tau, phi = params
+    if len(params) != 5:
+        raise ValueError("Expected 5 parameters: omega, alpha, beta, tau, phi")
+
     eps = returns.fillna(0).values
     n = len(eps)
+    if n == 0:
+        return 0.0
 
+    omega, alpha, beta, tau, phi = params
     sigma2 = np.zeros(n)
     q = np.zeros(n)  # long-term (permanent) component
 
@@ -35,7 +40,12 @@ def component_garch_log_likelihood(params, returns):
             return np.inf
 
     log_lik = -0.5 * (np.log(2 * np.pi) + np.log(sigma2) + eps**2 / sigma2)
-    return -np.sum(log_lik)
+    log_lik_sum = -np.sum(log_lik)
+
+    if not np.isfinite(log_lik_sum):
+        return np.inf
+
+    return log_lik_sum
 
 def estimate_component_garch_params(returns: pd.Series) -> dict:
     """

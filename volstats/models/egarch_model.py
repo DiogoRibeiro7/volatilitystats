@@ -39,9 +39,13 @@ def egarch_log_likelihood(params: Sequence[float], returns: pd.Series, p: int, q
         garch = sum(beta[j] * log_sigma2[t - j - 1] for j in range(p))
         log_sigma2[t] = omega + arch + garch
 
-    sigma2 = np.exp(log_sigma2)
-    log_lik = -0.5 * (np.log(2 * np.pi) + log_sigma2 + eps**2 / sigma2)
-    return -np.sum(log_lik)
+    log_lik = -0.5 * (np.log(2 * np.pi) + log_sigma2 + eps**2 / np.exp(log_sigma2))
+    log_lik_sum = -np.sum(log_lik)
+
+    if not np.isfinite(log_lik_sum):
+        return np.inf
+
+    return log_lik_sum
 
 def estimate_egarch_params(
     returns: pd.Series,

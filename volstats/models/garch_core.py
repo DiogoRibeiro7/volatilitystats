@@ -1,13 +1,13 @@
 import numpy as np
 import pandas as pd
-from typing import Sequence
+from typing import Sequence, Optional
 
 def garch(
     returns: pd.Series,
     omega: float,
     alpha: Sequence[float],
     beta: Sequence[float],
-    initial_vol: float | None = None
+    initial_vol: Optional[float] = None
 ) -> pd.Series:
     """
     General GARCH(p, q) conditional volatility estimator.
