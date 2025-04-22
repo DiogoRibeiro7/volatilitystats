@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "volstats"
+version = "0.1.0"
+description = "A Python package for volatility modeling and estimation: GARCH, SV, OHLC estimators, realized volatility, and more."
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "volstats" }]
+keywords = ["volatility", "finance", "garch", "risk", "stochastic volatility"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Office/Business :: Financial"
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9"
+numpy = "*"
+pandas = "*"
+scipy = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
