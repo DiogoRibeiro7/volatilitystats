@@ -1,0 +1,3 @@
+import pandas as pd
+
+def standard_volatility(df: pd.DataFrame, window: int = 20, annualization_factor: int = 252) -> pd.Series: ...

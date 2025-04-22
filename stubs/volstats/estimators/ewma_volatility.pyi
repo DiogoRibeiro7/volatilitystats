@@ -1,0 +1,3 @@
+import pandas as pd
+
+def ewma_volatility(returns: pd.Series, lambda_: float = 0.94, annualization_factor: int = 252) -> pd.Series: ...
