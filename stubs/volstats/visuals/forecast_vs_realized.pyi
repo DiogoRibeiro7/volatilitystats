@@ -1,0 +1,3 @@
+import pandas as pd
+
+def plot_forecast_vs_realized(forecast: pd.Series, realized: pd.Series, title: str = 'Forecast vs Realized Volatility', ylabel: str = 'Volatility', figsize: tuple = (12, 6), savepath: str | None = None, show_metrics: bool = True, show_residuals: bool = False, rolling_corr_window: int | None = None): ...

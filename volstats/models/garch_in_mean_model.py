@@ -1,30 +1,9 @@
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
-from typing import Sequence, Tuple
+from volstats.utils.confidence import compute_confidence_bands
 
 def garch_in_mean_log_likelihood(params: np.ndarray, returns: pd.Series, p: int, q: int) -> float:
-    """
-    Log-likelihood for GARCH-in-Mean(p,q) model:
-        r_t = mu + lambda * sqrt(sigma2_t) + eps_t
-        sigma2_t = omega + sum(alpha_i * eps_{t-i}^2) + sum(beta_j * sigma2_{t-j})
-
-    Parameters
-    ----------
-    params : np.ndarray
-        Model parameters: [mu, lambda, omega, alpha_1..q, beta_1..p]
-    returns : pd.Series
-        Series of returns
-    p : int
-        GARCH lags
-    q : int
-        ARCH lags
-
-    Returns
-    -------
-    float
-        Negative log-likelihood value
-    """
     mu = params[0]
     lmbda = params[1]
     omega = params[2]
@@ -48,30 +27,15 @@ def garch_in_mean_log_likelihood(params: np.ndarray, returns: pd.Series, p: int,
     eps[-1] = y[-1] - mu - lmbda * np.sqrt(sigma2[-1])
     log_lik = -0.5 * (np.log(2 * np.pi) + np.log(sigma2) + eps**2 / sigma2)
     total_ll = -np.sum(log_lik)
+    return np.inf if not np.isfinite(total_ll) else total_ll
 
-    if not np.isfinite(total_ll):
-        return np.inf
-
-    return total_ll
-
-def estimate_garch_in_mean_params(returns: pd.Series, p: int = 1, q: int = 1) -> dict:
-    """
-    Estimate GARCH-in-Mean(p, q) model parameters via MLE.
-
-    Parameters
-    ----------
-    returns : pd.Series
-        Series of returns
-    p : int
-        GARCH lags
-    q : int
-        ARCH lags
-
-    Returns
-    -------
-    dict
-        Estimated parameters and volatility series
-    """
+def estimate_garch_in_mean_params(
+    returns: pd.Series,
+    p: int = 1,
+    q: int = 1,
+    with_confidence: bool = False,
+    stderr_fraction: float = 0.1
+) -> dict:
     k = 3 + q + p
     initial_guess = [0.0, 0.0, 1e-6] + [0.05] * q + [0.9 / p] * p
     bounds = [(-10, 10), (-5, 5), (1e-6, 10)] + [(1e-6, 1)] * q + [(1e-6, 1)] * p
@@ -106,7 +70,7 @@ def estimate_garch_in_mean_params(returns: pd.Series, p: int = 1, q: int = 1) ->
     volatility = pd.Series(np.sqrt(sigma2), index=returns.index, name=f"GARCH-in-Mean({p},{q}) Volatility")
     mean_component = mu + lmbda * volatility
 
-    return {
+    output = {
         "mu": mu,
         "lambda": lmbda,
         "omega": omega,
@@ -115,3 +79,12 @@ def estimate_garch_in_mean_params(returns: pd.Series, p: int = 1, q: int = 1) ->
         "volatility": volatility,
         "conditional_mean": pd.Series(mean_component, index=returns.index, name="Conditional Mean")
     }
+
+    if with_confidence:
+        stderr = pd.Series(stderr_fraction * volatility, index=volatility.index)
+        lower, upper = compute_confidence_bands(volatility, stderr)
+        output["stderr"] = stderr
+        output["lower"] = lower
+        output["upper"] = upper
+
+    return output

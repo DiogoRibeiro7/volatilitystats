@@ -1,0 +1,3 @@
+import pandas as pd
+
+def plot_price_with_jumps(df: pd.DataFrame, price_column: str, jump_series: pd.Series, title: str = 'Price with Detected Jumps', figsize: tuple = (12, 5), savepath: str | None = None): ...
