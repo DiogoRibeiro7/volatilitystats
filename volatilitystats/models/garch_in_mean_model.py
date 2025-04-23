@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
-from volstats.utils.confidence import compute_confidence_bands
+from volatilitystats.utils.confidence import compute_confidence_bands
 
 def garch_in_mean_log_likelihood(params: np.ndarray, returns: pd.Series, p: int, q: int) -> float:
     mu = params[0]

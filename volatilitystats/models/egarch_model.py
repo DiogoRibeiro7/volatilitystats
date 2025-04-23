@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 from typing import Sequence
-from volstats.utils.confidence import compute_confidence_bands
+from volatilitystats.utils.confidence import compute_confidence_bands
 
 def egarch_log_likelihood(params: Sequence[float], returns: pd.Series, p: int, q: int) -> float:
     """

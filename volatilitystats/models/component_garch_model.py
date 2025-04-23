@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
-from volstats.utils.confidence import compute_confidence_bands
+from volatilitystats.utils.confidence import compute_confidence_bands
 
 def component_garch_log_likelihood(params, returns):
     """

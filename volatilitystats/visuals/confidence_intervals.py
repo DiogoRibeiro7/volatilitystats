@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from typing import Optional, Literal
-from volstats.utils.confidence import compute_confidence_bands
+from volatilitystats.utils.confidence import compute_confidence_bands
 
 def plot_forecast_with_confidence_band(
     forecast: pd.Series,

@@ -1,8 +1,8 @@
-# volstats
+# volatilitystats
 
 **Volatility models and estimators in pure Python**
 
-`volstats` is a Python package for computing and comparing volatility estimators, including both classical methods (e.g., Parkinson, Yang-Zhang) and model-based approaches (e.g., GARCH, EGARCH, HARCH). It is designed to be lightweight, dependency-free (just NumPy, SciPy, Pandas), and easy to extend.
+`volatilitystats` is a Python package for computing and comparing volatility estimators, including both classical methods (e.g., Parkinson, Yang-Zhang) and model-based approaches (e.g., GARCH, EGARCH, HARCH). It is designed to be lightweight, dependency-free (just NumPy, SciPy, Pandas), and easy to extend.
 
 ---
 
@@ -35,7 +35,7 @@
 ## 📁 Package Structure
 
 ```plaintext
-volstats/
+volatilitystats/
 │
 ├── estimators/
 │   ├── standard.py            # Close-to-close volatility

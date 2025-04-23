@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-from volstats.models.garch_core import garch
+from volatilitystats.models.garch_core import garch
 
 @pytest.fixture
 def returns():

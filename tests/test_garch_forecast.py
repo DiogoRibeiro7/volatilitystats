@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from volstats.models.garch_forecast import forecast_garch
+from volatilitystats.models.garch_forecast import forecast_garch
 
 def test_forecast_garch_basic():
     omega = 0.1

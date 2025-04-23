@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 from typing import Sequence, Union
-from volstats.models import garch
-from volstats.utils.confidence import compute_confidence_bands
+from volatilitystats.models import garch
+from volatilitystats.utils.confidence import compute_confidence_bands
 
 def garch_log_likelihood(
     params: Sequence[float],

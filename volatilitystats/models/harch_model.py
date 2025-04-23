@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 from typing import Sequence
-from volstats.utils.confidence import compute_confidence_bands
+from volatilitystats.utils.confidence import compute_confidence_bands
 
 def harch_log_likelihood(params: Sequence[float], returns: pd.Series, lags: Sequence[int]) -> float:
     omega = params[0]
