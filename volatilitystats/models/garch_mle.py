@@ -2,7 +2,8 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 from typing import Sequence, Union
-from volstats.models import garch
+from volatilitystats.models import garch
+from volatilitystats.utils.confidence import compute_confidence_bands
 
 def garch_log_likelihood(
     params: Sequence[float],
@@ -10,25 +11,6 @@ def garch_log_likelihood(
     p: int,
     q: int
 ) -> float:
-    """
-    Negative log-likelihood for GARCH(p, q) under Gaussian errors.
-
-    Parameters
-    ----------
-    params : Sequence[float]
-        Model parameters: [omega, alpha_1, ..., alpha_q, beta_1, ..., beta_p].
-    returns : pd.Series
-        Log returns.
-    p : int
-        Number of GARCH terms (lags of conditional variance).
-    q : int
-        Number of ARCH terms (lags of squared residuals).
-
-    Returns
-    -------
-    float
-        Negative log-likelihood value.
-    """
     omega = params[0]
     alpha = params[1 : 1 + q]
     beta = params[1 + q : 1 + q + p]
@@ -52,27 +34,10 @@ def estimate_garch_params(
     returns: pd.Series,
     p: int = 1,
     q: int = 1,
-    bounds: Union[Sequence[tuple], None] = None
+    bounds: Union[Sequence[tuple], None] = None,
+    with_confidence: bool = False,
+    stderr_fraction: float = 0.1
 ) -> dict:
-    """
-    Estimate GARCH(p, q) parameters via maximum likelihood.
-
-    Parameters
-    ----------
-    returns : pd.Series
-        Log returns.
-    p : int
-        Number of GARCH terms.
-    q : int
-        Number of ARCH terms.
-    bounds : Sequence[tuple], optional
-        Bounds for optimization. If None, uses default positive bounds.
-
-    Returns
-    -------
-    dict
-        Dictionary with omega, alpha list, beta list, and volatility series.
-    """
     k = 1 + q + p
     if bounds is None:
         bounds = [(1e-6, 1.0)] * k
@@ -92,9 +57,18 @@ def estimate_garch_params(
     beta = result.x[1 + q : 1 + q + p]
     vol = garch(returns, omega, alpha, beta)
 
-    return {
+    output = {
         "omega": omega,
         "alpha": alpha,
         "beta": beta,
         "volatility": vol
     }
+
+    if with_confidence:
+        stderr = pd.Series(stderr_fraction * vol, index=vol.index)
+        lower, upper = compute_confidence_bands(vol, stderr)
+        output["stderr"] = stderr
+        output["lower"] = lower
+        output["upper"] = upper
+
+    return output

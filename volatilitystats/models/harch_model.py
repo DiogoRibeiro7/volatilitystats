@@ -2,25 +2,9 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 from typing import Sequence
+from volatilitystats.utils.confidence import compute_confidence_bands
 
 def harch_log_likelihood(params: Sequence[float], returns: pd.Series, lags: Sequence[int]) -> float:
-    """
-    Log-likelihood function for the HARCH model.
-
-    Parameters
-    ----------
-    params : list of float
-        Model parameters: [omega, alpha_1, ..., alpha_k]
-    returns : pd.Series
-        Log returns.
-    lags : list of int
-        Lag window sizes (e.g., [1, 5, 22])
-
-    Returns
-    -------
-    float
-        Negative log-likelihood.
-    """
     omega = params[0]
     alpha = params[1:]
 
@@ -38,28 +22,14 @@ def harch_log_likelihood(params: Sequence[float], returns: pd.Series, lags: Sequ
 
     log_lik = -0.5 * (np.log(2 * np.pi) + np.log(sigma2) + y**2 / sigma2)
     total_ll = -np.sum(log_lik)
+    return np.inf if not np.isfinite(total_ll) else total_ll
 
-    if not np.isfinite(total_ll):
-        return np.inf
-
-    return total_ll
-
-def estimate_harch_params(returns: pd.Series, lags: Sequence[int]) -> dict:
-    """
-    Estimate HARCH model parameters via MLE.
-
-    Parameters
-    ----------
-    returns : pd.Series
-        Log returns.
-    lags : list of int
-        Lag window sizes (e.g., [1, 5, 22])
-
-    Returns
-    -------
-    dict
-        Dictionary of estimated parameters and conditional volatility.
-    """
+def estimate_harch_params(
+    returns: pd.Series,
+    lags: Sequence[int],
+    with_confidence: bool = False,
+    stderr_fraction: float = 0.1
+) -> dict:
     k = len(lags)
     initial_guess = [1e-6] + [0.05] * k
     bounds = [(1e-6, None)] + [(1e-6, 1)] * k
@@ -87,8 +57,17 @@ def estimate_harch_params(returns: pd.Series, lags: Sequence[int]) -> dict:
 
     volatility = pd.Series(np.sqrt(sigma2), index=returns.index, name="HARCH Volatility")
 
-    return {
+    output = {
         "omega": omega,
         "alpha": alpha,
         "volatility": volatility
     }
+
+    if with_confidence:
+        stderr = pd.Series(stderr_fraction * volatility, index=volatility.index)
+        lower, upper = compute_confidence_bands(volatility, stderr)
+        output["stderr"] = stderr
+        output["lower"] = lower
+        output["upper"] = upper
+
+    return output

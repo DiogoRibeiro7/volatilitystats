@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-from volstats.models.egarch_model import estimate_egarch_params, egarch_log_likelihood
+from volatilitystats.models.egarch_model import estimate_egarch_params, egarch_log_likelihood
 
 def test_estimate_egarch_params_valid():
     returns = pd.Series(np.random.normal(0, 1, 200))

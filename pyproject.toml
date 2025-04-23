@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "volstats"
+name = "volatilitystats"
 version = "0.1.0"
 description = "A Python package for volatility modeling and estimation: GARCH, SV, OHLC estimators, realized volatility, and more."
 authors = ["Your Name <you@example.com>"]
@@ -24,6 +24,7 @@ invoke = "^2.2.0"
 sphinx = "*"
 sphinx-autodoc-typehints = "*"
 sphinx_rtd_theme = "*"
+matplotlib = "^3.7.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

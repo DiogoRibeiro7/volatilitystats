@@ -3,7 +3,7 @@ import shlex
 
 @task
 def test(c):
-    c.run("poetry run pytest --cov=volstats --cov-report=term --cov-report=xml")
+    c.run("poetry run pytest --cov=volatilitystats --cov-report=term --cov-report=xml")
 
 @task
 def docs(c):
@@ -11,7 +11,7 @@ def docs(c):
 
 @task
 def stubs(c):
-    c.run("poetry run stubgen -p volstats -o stubs")
+    c.run("poetry run stubgen -p volatilitystats -o stubs")
 
 @task
 def build(c):

@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 import numpy as np
-from volstats.models.component_garch_model import component_garch_log_likelihood
+from volatilitystats.models.component_garch_model import component_garch_log_likelihood
 
 def test_component_garch_log_likelihood_valid_input():
     # Test with valid parameters and returns

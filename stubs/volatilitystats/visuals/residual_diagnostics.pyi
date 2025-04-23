@@ -1,0 +1,3 @@
+import pandas as pd
+
+def plot_residual_diagnostics(residuals: pd.Series, lags: int = 20, title_prefix: str = '', savepath: str | None = None): ...

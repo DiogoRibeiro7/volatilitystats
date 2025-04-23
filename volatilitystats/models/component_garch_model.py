@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
+from volatilitystats.utils.confidence import compute_confidence_bands
 
 def component_garch_log_likelihood(params, returns):
     """
@@ -47,7 +48,7 @@ def component_garch_log_likelihood(params, returns):
 
     return log_lik_sum
 
-def estimate_component_garch_params(returns: pd.Series) -> dict:
+def estimate_component_garch_params(returns: pd.Series, with_confidence: bool = False, stderr_fraction: float = 0.1) -> dict:
     """
     Estimate Component GARCH(1,1) parameters via MLE.
 
@@ -55,6 +56,10 @@ def estimate_component_garch_params(returns: pd.Series) -> dict:
     ----------
     returns : pd.Series
         Log returns.
+    with_confidence : bool
+        If True, compute confidence bands from simple standard error approximation.
+    stderr_fraction : float
+        Multiplier to simulate stderr when not estimated directly.
 
     Returns
     -------
@@ -88,7 +93,7 @@ def estimate_component_garch_params(returns: pd.Series) -> dict:
 
     volatility = pd.Series(np.sqrt(sigma2), index=returns.index, name="ComponentGARCH(1,1) Volatility")
 
-    return {
+    output = {
         "omega": omega,
         "alpha": alpha,
         "beta": beta,
@@ -96,3 +101,12 @@ def estimate_component_garch_params(returns: pd.Series) -> dict:
         "phi": phi,
         "volatility": volatility
     }
+
+    if with_confidence:
+        stderr = pd.Series(stderr_fraction * volatility, index=volatility.index)
+        lower, upper = compute_confidence_bands(volatility, stderr)
+        output["stderr"] = stderr
+        output["lower"] = lower
+        output["upper"] = upper
+
+    return output

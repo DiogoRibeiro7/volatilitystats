@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-from volstats.models.harch_model import estimate_harch_params, harch_log_likelihood
+from volatilitystats.models.harch_model import estimate_harch_params, harch_log_likelihood
 
 @pytest.fixture
 def returns():

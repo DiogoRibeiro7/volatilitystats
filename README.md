@@ -1,43 +1,67 @@
-# volstats
+# volatilitystats
 
 **Volatility models and estimators in pure Python**
 
-`volstats` is a Python package for computing and comparing volatility estimators, including both classical methods (e.g., Parkinson, Yang-Zhang) and model-based approaches (e.g., GARCH). It is designed to be lightweight, dependency-free (just NumPy, SciPy, Pandas), and easy to extend.
+`volatilitystats` is a Python package for computing and comparing volatility estimators, including both classical methods (e.g., Parkinson, Yang-Zhang) and model-based approaches (e.g., GARCH, EGARCH, HARCH). It is designed to be lightweight, dependency-free (just NumPy, SciPy, Pandas), and easy to extend.
 
 ---
 
 ## 📦 Features
 
+### 🧮 Statistical Estimators
 - ✅ Standard close-to-close volatility (log returns)
-- ✅ High–low based volatility (Parkinson)
-- ✅ Open–high–low–close estimator (Yang-Zhang)
-- ✅ GARCH(p, q) model-based volatility
-- ✅ MLE estimation of GARCH(1,1) parameters
-- ✅ Forecast future volatility with recursive GARCH predictions
+- ✅ Parkinson estimator (high–low range)
+- ✅ Yang-Zhang estimator (OHLC)
+- ✅ Rogers-Satchell and Garman-Klass
+- ✅ EWMA (Exponentially Weighted Moving Average)
+- ✅ Realized Volatility: Two-Scale, Median, Bipower
+
+### 📈 Volatility Models
+- ✅ GARCH(p, q), EGARCH(p, q), GJR-GARCH(p, q)
+- ✅ GARCH-in-Mean (GARCH-M)
+- ✅ Component GARCH
+- ✅ HARCH
+- ✅ Stochastic Volatility (simulation-based)
+
+### ⚙️ Utilities and Tooling
+- ✅ Forecasting with GARCH
+- ✅ MLE parameter estimation for all models
+- ✅ Realized volatility estimators with resampled time grouping
+- ✅ Clean modular structure (estimators/models/tests/docs)
+- ✅ Full support for `poetry`, `pytest`, and `invoke` tasks
 
 ---
 
 ## 📁 Package Structure
 
 ```plaintext
-volstats/
-│
-├── __init__.py
+volatilitystats/
 │
 ├── estimators/
-│   ├── __init__.py
-│   ├── standard.py       # Close-to-close volatility
+│   ├── standard.py            # Close-to-close volatility
 │   ├── parkinson.py
-│   └── yangzhang.py
+│   ├── yangzhang.py
+│   ├── rogers_satchell.py
+│   ├── garman_klass.py
+│   ├── ewma_volatility.py
+│   ├── two_scale_realized_volatility.py
+│   ├── median_realized_volatility.py
+│   └── bipower_variation.py
 │
 ├── models/
-│   ├── __init__.py
-│   ├── garch_core.py     # GARCH(p,q)
-│   ├── garch_mle.py      # MLE for GARCH(1,1)
-│   └── garch_forecast.py # Forecasting
+│   ├── garch_core.py          # GARCH(p, q) volatility
+│   ├── garch_forecast.py      # GARCH forecasting
+│   ├── garch_mle.py           # GARCH parameter estimation
+│   ├── egarch_model.py
+│   ├── gjr_garch_model.py
+│   ├── garch_in_mean_model.py
+│   ├── component_garch_model.py
+│   ├── harch_model.py
+│   └── stochastic_volatility_model.py
 │
-├── utils/
-│   └── likelihood.py     # Common likelihood helpers (optional for reuse)
+├── tests/                    # Unit tests (pytest)
+├── docs/                     # Sphinx-based documentation
+└── roadmap.md                # Project milestones and goals
 ```
 
 
@@ -63,3 +87,10 @@ yz_vol = yang_zhang_volatility(df)
 
 # Plot or analyze
 ```
+
+
+## 📚 Documentation
+Full usage examples and API reference coming soon at [📘 Read the Docs](https://volstats.readthedocs.io) (planned).
+
+## 🤝 Contributing
+Open an issue, suggest improvements, or help us add new estimators and models.

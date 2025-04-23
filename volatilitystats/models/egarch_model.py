@@ -2,26 +2,11 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 from typing import Sequence
+from volatilitystats.utils.confidence import compute_confidence_bands
 
 def egarch_log_likelihood(params: Sequence[float], returns: pd.Series, p: int, q: int) -> float:
     """
     Negative log-likelihood for EGARCH(p, q) under normal errors.
-
-    Parameters
-    ----------
-    params : Sequence[float]
-        Model parameters: [omega, alpha_1..q, gamma_1..q, beta_1..p].
-    returns : pd.Series
-        Log returns.
-    p : int
-        Number of lagged log-volatility terms.
-    q : int
-        Number of lagged innovation terms.
-
-    Returns
-    -------
-    float
-        Negative log-likelihood value.
     """
     omega = params[0]
     alpha = params[1 : 1 + q]
@@ -41,16 +26,14 @@ def egarch_log_likelihood(params: Sequence[float], returns: pd.Series, p: int, q
 
     log_lik = -0.5 * (np.log(2 * np.pi) + log_sigma2 + eps**2 / np.exp(log_sigma2))
     log_lik_sum = -np.sum(log_lik)
-
-    if not np.isfinite(log_lik_sum):
-        return np.inf
-
-    return log_lik_sum
+    return np.inf if not np.isfinite(log_lik_sum) else log_lik_sum
 
 def estimate_egarch_params(
     returns: pd.Series,
     p: int = 1,
-    q: int = 1
+    q: int = 1,
+    with_confidence: bool = False,
+    stderr_fraction: float = 0.1
 ) -> dict:
     """
     Estimate EGARCH(p, q) parameters via MLE.
@@ -63,11 +46,15 @@ def estimate_egarch_params(
         Order of lagged log-volatility terms.
     q : int
         Order of lagged innovation terms.
+    with_confidence : bool
+        If True, compute confidence bands.
+    stderr_fraction : float
+        Multiplier to simulate stderr when not estimated directly.
 
     Returns
     -------
     dict
-        Estimated parameters and volatility series.
+        Model parameters, volatility series, and optional confidence intervals.
     """
     k = 1 + 2 * q + p
     initial_guess = [0.0] + [0.05] * q + [0.0] * q + [0.9 / p] * p
@@ -99,10 +86,19 @@ def estimate_egarch_params(
 
     volatility = pd.Series(np.exp(0.5 * log_sigma2), index=returns.index, name=f"EGARCH({p},{q}) Volatility")
 
-    return {
+    output = {
         "omega": omega,
         "alpha": alpha,
         "gamma": gamma,
         "beta": beta,
         "volatility": volatility
     }
+
+    if with_confidence:
+        stderr = pd.Series(stderr_fraction * volatility, index=volatility.index)
+        lower, upper = compute_confidence_bands(volatility, stderr)
+        output["stderr"] = stderr
+        output["lower"] = lower
+        output["upper"] = upper
+
+    return output

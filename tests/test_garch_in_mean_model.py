@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-from volstats.models.garch_in_mean_model import estimate_garch_in_mean_params, garch_in_mean_log_likelihood
+from volatilitystats.models.garch_in_mean_model import estimate_garch_in_mean_params, garch_in_mean_log_likelihood
 
 @pytest.fixture
 def returns():

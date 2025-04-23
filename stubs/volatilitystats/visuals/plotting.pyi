@@ -1,0 +1,3 @@
+import pandas as pd
+
+def plot_volatility_series(vol_dict: dict[str, pd.Series], title: str = 'Volatility Comparison', figsize: tuple = (12, 5), ylabel: str = 'Volatility', savepath: str | None = None): ...
