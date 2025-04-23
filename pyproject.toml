@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "volatilitystats"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Python package for volatility modeling and estimation: GARCH, SV, OHLC estimators, realized volatility, and more."
 authors = ["Your Name <you@example.com>"]
 license = "MIT"
